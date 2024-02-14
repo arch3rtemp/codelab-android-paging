@@ -182,7 +182,6 @@ class SearchRepositoriesActivity : AppCompatActivity() {
                     it.map { uiModel ->
                         when (uiModel) {
                             is UiModel.RepoItem -> { RepoDrawer(uiModel) }
-
                             is UiModel.SeparatorItem -> { SeparatorDrawer(uiModel) }
                         }
                     }
@@ -210,7 +209,7 @@ class SearchRepositoriesActivity : AppCompatActivity() {
                 errorState?.let {
                     Toast.makeText(
                         this@SearchRepositoriesActivity,
-                        "\uD83D\uDE28 Wooops ${it.error}",
+                        "\uD83D\uDE28 Whoops! ${it.error}",
                         Toast.LENGTH_LONG
                     ).show()
                 }

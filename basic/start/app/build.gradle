@@ -51,6 +51,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    namespace 'com.example.android.codelabs.paging'
 }
 
 dependencies {
@@ -67,6 +68,7 @@ dependencies {
 
     // architecture components
     implementation libs.androidx.activity.ktx
+    implementation libs.fragment.ktx
     implementation libs.androidx.core.ktx
     implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.androidx.lifecycle.viewModel.ktx
