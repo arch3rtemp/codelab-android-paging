@@ -17,8 +17,8 @@
 package com.example.android.codelabs.paging.ui.adapter.viewholder
 
 import android.view.View
-import android.widget.TextView
 import com.example.android.codelabs.paging.R
+import com.example.android.codelabs.paging.databinding.RepoViewItemBinding
 import com.example.android.codelabs.paging.model.Repo
 import com.example.android.codelabs.paging.ui.UiModel
 import com.example.android.codelabs.paging.ui.common.CommonViewHolder
@@ -26,26 +26,21 @@ import com.example.android.codelabs.paging.ui.common.CommonViewHolder
 /**
  * View Holder for a [Repo] RecyclerView list item.
  */
-class RepoViewHolder(view: View) : CommonViewHolder<UiModel>(view) {
-    private val name: TextView = view.findViewById(R.id.repo_name)
-    private val description: TextView = view.findViewById(R.id.repo_description)
-    private val stars: TextView = view.findViewById(R.id.repo_stars)
-    private val language: TextView = view.findViewById(R.id.repo_language)
-    private val forks: TextView = view.findViewById(R.id.repo_forks)
+class RepoViewHolder(private val binding: RepoViewItemBinding) : CommonViewHolder<UiModel>(binding.root) {
 
     private var repo: Repo? = null
 
-    override fun setData(model: UiModel, clickListener: (UiModel) -> Unit) {
+    override fun setData(model: UiModel, clickListener: (UiModel) -> Unit) = with(binding) {
 
         if (model is UiModel.RepoItem) {
             val data = model.repo
             if (data == null) {
                 val resources = itemView.resources
-                name.text = resources.getString(R.string.loading)
-                description.visibility = View.GONE
-                language.visibility = View.GONE
-                stars.text = resources.getString(R.string.unknown)
-                forks.text = resources.getString(R.string.unknown)
+                repoName.text = resources.getString(R.string.loading)
+                repoDescription.visibility = View.GONE
+                repoLanguage.visibility = View.GONE
+                repoStars.text = resources.getString(R.string.unknown)
+                repoForks.text = resources.getString(R.string.unknown)
             } else {
                 showRepoData(data)
             }
@@ -56,26 +51,28 @@ class RepoViewHolder(view: View) : CommonViewHolder<UiModel>(view) {
 
     private fun showRepoData(repo: Repo) {
         this.repo = repo
-        name.text = repo.fullName
+        binding.apply {
+            repoName.text = repo.fullName
 
-        // if the description is missing, hide the TextView
-        var descriptionVisibility = View.GONE
-        if (repo.description != null) {
-            description.text = repo.description
-            descriptionVisibility = View.VISIBLE
+            // if the description is missing, hide the TextView
+            var descriptionVisibility = View.GONE
+            if (repo.description != null) {
+                repoDescription.text = repo.description
+                descriptionVisibility = View.VISIBLE
+            }
+            repoDescription.visibility = descriptionVisibility
+
+            repoStars.text = repo.stars.toString()
+            repoForks.text = repo.forks.toString()
+
+            // if the language is missing, hide the label and the value
+            var languageVisibility = View.GONE
+            if (!repo.language.isNullOrEmpty()) {
+                val resources = binding.root.context.resources
+                repoLanguage.text = resources.getString(R.string.language, repo.language)
+                languageVisibility = View.VISIBLE
+            }
+            repoLanguage.visibility = languageVisibility
         }
-        description.visibility = descriptionVisibility
-
-        stars.text = repo.stars.toString()
-        forks.text = repo.forks.toString()
-
-        // if the language is missing, hide the label and the value
-        var languageVisibility = View.GONE
-        if (!repo.language.isNullOrEmpty()) {
-            val resources = this.itemView.context.resources
-            language.text = resources.getString(R.string.language, repo.language)
-            languageVisibility = View.VISIBLE
-        }
-        language.visibility = languageVisibility
     }
 }
