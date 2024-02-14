@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.example.android.codelabs.paging.ui
+package com.example.android.codelabs.paging.ui.adapter.viewholder
 
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.example.android.codelabs.paging.R
 import com.example.android.codelabs.paging.model.Repo
+import com.example.android.codelabs.paging.ui.UiModel
+import com.example.android.codelabs.paging.ui.common.CommonViewHolder
 
 /**
  * View Holder for a [Repo] RecyclerView list item.
  */
-class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class RepoViewHolder(view: View) : CommonViewHolder<UiModel>(view) {
     private val name: TextView = view.findViewById(R.id.repo_name)
     private val description: TextView = view.findViewById(R.id.repo_description)
     private val stars: TextView = view.findViewById(R.id.repo_stars)
@@ -40,24 +39,27 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     init {
         view.setOnClickListener {
-            repo?.url?.let { url ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                view.context.startActivity(intent)
-            }
+
         }
     }
 
-    fun bind(repo: Repo?) {
-        if (repo == null) {
-            val resources = itemView.resources
-            name.text = resources.getString(R.string.loading)
-            description.visibility = View.GONE
-            language.visibility = View.GONE
-            stars.text = resources.getString(R.string.unknown)
-            forks.text = resources.getString(R.string.unknown)
-        } else {
-            showRepoData(repo)
+    override fun setData(model: UiModel, clickListener: (UiModel) -> Unit) {
+
+        if (model is UiModel.RepoItem) {
+            val data = model.repo
+            if (data == null) {
+                val resources = itemView.resources
+                name.text = resources.getString(R.string.loading)
+                description.visibility = View.GONE
+                language.visibility = View.GONE
+                stars.text = resources.getString(R.string.unknown)
+                forks.text = resources.getString(R.string.unknown)
+            } else {
+                showRepoData(data)
+            }
         }
+
+        itemView.setOnClickListener { clickListener(model) }
     }
 
     private fun showRepoData(repo: Repo) {
@@ -86,7 +88,7 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     companion object {
-        fun create(parent: ViewGroup): RepoViewHolder {
+        fun create(parent: ViewGroup): CommonViewHolder<UiModel> {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.repo_view_item, parent, false)
             return RepoViewHolder(view)
