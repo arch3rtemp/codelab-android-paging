@@ -16,9 +16,7 @@
 
 package com.example.android.codelabs.paging.ui.adapter.viewholder
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import com.example.android.codelabs.paging.R
 import com.example.android.codelabs.paging.model.Repo
@@ -36,12 +34,6 @@ class RepoViewHolder(view: View) : CommonViewHolder<UiModel>(view) {
     private val forks: TextView = view.findViewById(R.id.repo_forks)
 
     private var repo: Repo? = null
-
-    init {
-        view.setOnClickListener {
-
-        }
-    }
 
     override fun setData(model: UiModel, clickListener: (UiModel) -> Unit) {
 
@@ -85,13 +77,5 @@ class RepoViewHolder(view: View) : CommonViewHolder<UiModel>(view) {
             languageVisibility = View.VISIBLE
         }
         language.visibility = languageVisibility
-    }
-
-    companion object {
-        fun create(parent: ViewGroup): CommonViewHolder<UiModel> {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.repo_view_item, parent, false)
-            return RepoViewHolder(view)
-        }
     }
 }

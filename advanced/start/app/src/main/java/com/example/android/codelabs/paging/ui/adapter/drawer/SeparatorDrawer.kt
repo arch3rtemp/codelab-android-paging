@@ -1,6 +1,8 @@
 package com.example.android.codelabs.paging.ui.adapter.drawer
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.example.android.codelabs.paging.R
 import com.example.android.codelabs.paging.ui.UiModel
 import com.example.android.codelabs.paging.ui.adapter.viewholder.SeparatorViewHolder
 import com.example.android.codelabs.paging.ui.common.CommonViewHolder
@@ -8,7 +10,8 @@ import com.example.android.codelabs.paging.ui.common.ItemDrawer
 
 class SeparatorDrawer(override val model: UiModel) : ItemDrawer {
     override fun createViewHolder(parent: ViewGroup): CommonViewHolder<UiModel> {
-        return SeparatorViewHolder.create(parent)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.separator_view_item, parent, false)
+        return SeparatorViewHolder(view)
     }
 
     override fun bind(holder: CommonViewHolder<UiModel>, listener: (UiModel) -> Unit) {
