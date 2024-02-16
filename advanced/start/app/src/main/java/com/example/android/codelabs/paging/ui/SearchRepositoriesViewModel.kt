@@ -143,41 +143,12 @@ class SearchRepositoriesViewModel(
 }
 
 sealed interface UiModel {
-    data class RepoItem(val repo: Repo?) : UiModel {
-        override fun compareByType(newItem: UiModel): Boolean {
-            return if (newItem is RepoItem) {
-                repo?.id == newItem.repo?.id
-            } else false
-        }
-
-        override fun compareByContent(newItem: UiModel): Boolean {
-            return if (newItem is RepoItem) {
-                repo == newItem.repo
-            } else false
-        }
-    }
-
-    data class SeparatorItem(val description: String?) : UiModel {
-        override fun compareByType(newItem: UiModel): Boolean {
-            return if (newItem is SeparatorItem) {
-                description == newItem.description
-            } else false
-        }
-
-        override fun compareByContent(newItem: UiModel): Boolean {
-            return if (newItem is SeparatorItem) {
-                description == newItem.description
-            } else false
-        }
-    }
-
-    fun compareByType(newItem: UiModel): Boolean
-
-    fun compareByContent(newItem: UiModel): Boolean
+    data class RepoItem(val repo: Repo) : UiModel
+    data class SeparatorItem(val description: String?) : UiModel
 }
 
 private val UiModel.RepoItem.roundedStarCount: Int
-    get() = (this.repo?.stars ?: 0) / 10_000
+    get() = this.repo.stars / 10_000
 
 sealed interface UiAction {
     data class Search(val query: String) : UiAction

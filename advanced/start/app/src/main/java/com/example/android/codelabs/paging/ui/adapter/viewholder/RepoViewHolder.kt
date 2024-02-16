@@ -26,31 +26,19 @@ import com.example.android.codelabs.paging.ui.common.CommonViewHolder
 /**
  * View Holder for a [Repo] RecyclerView list item.
  */
-class RepoViewHolder(private val binding: RepoViewItemBinding) : CommonViewHolder<UiModel>(binding.root) {
+class RepoViewHolder(
+    binding: RepoViewItemBinding,
+    private val clickListener: (UiModel.RepoItem) -> Unit
+) : CommonViewHolder<RepoViewItemBinding, UiModel.RepoItem>(binding) {
 
-    private var repo: Repo? = null
-
-    override fun setData(model: UiModel, clickListener: (UiModel) -> Unit) = with(binding) {
-
-        if (model is UiModel.RepoItem) {
-            val data = model.repo
-            if (data == null) {
-                val resources = itemView.resources
-                repoName.text = resources.getString(R.string.loading)
-                repoDescription.visibility = View.GONE
-                repoLanguage.visibility = View.GONE
-                repoStars.text = resources.getString(R.string.unknown)
-                repoForks.text = resources.getString(R.string.unknown)
-            } else {
-                showRepoData(data)
-            }
-        }
-
-        itemView.setOnClickListener { clickListener(model) }
+    init {
+        itemView.setOnClickListener { clickListener(item) }
     }
 
-    private fun showRepoData(repo: Repo) {
-        this.repo = repo
+    override fun onBind(item: UiModel.RepoItem) {
+        super.onBind(item)
+
+        val repo = item.repo
         binding.apply {
             repoName.text = repo.fullName
 

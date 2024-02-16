@@ -28,7 +28,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.paging.PagingData
-import androidx.paging.map
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
@@ -40,11 +39,9 @@ import com.example.android.codelabs.paging.ui.adapter.drawer.RepoDrawer
 import com.example.android.codelabs.paging.ui.adapter.drawer.SeparatorDrawer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -83,14 +80,7 @@ class SearchRepositoriesActivity : AppCompatActivity() {
         pagingData: Flow<PagingData<UiModel>>,
         uiActions: (UiAction) -> Unit
     ) {
-        val repoAdapter = ReposAdapter { uiModel ->
-            if (uiModel is UiModel.RepoItem) {
-                uiModel.repo?.url?.let { url ->
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(intent)
-                }
-            }
-        }
+        val repoAdapter = ReposAdapter(getDrawers())
         val header = ReposLoadStateAdapter { repoAdapter.retry() }
         list.adapter = repoAdapter.withLoadStateHeaderAndFooter(
             header = header,
@@ -180,16 +170,7 @@ class SearchRepositoriesActivity : AppCompatActivity() {
             .distinctUntilChanged()
 
         lifecycleScope.launch {
-            pagingData
-                .map {
-                    it.map { uiModel ->
-                        when (uiModel) {
-                            is UiModel.RepoItem -> { RepoDrawer(uiModel) }
-                            is UiModel.SeparatorItem -> { SeparatorDrawer(uiModel) }
-                        }
-                    }
-                }
-                .collectLatest(repoAdapter::submitData)
+            pagingData.collectLatest(repoAdapter::submitData)
         }
 
         lifecycleScope.launch {
@@ -229,6 +210,15 @@ class SearchRepositoriesActivity : AppCompatActivity() {
                     ).show()
                 }
             }
+        }
+    }
+
+    private fun getDrawers() = listOf(RepoDrawer(::onRepoClick), SeparatorDrawer())
+
+    private fun onRepoClick(uiModel: UiModel.RepoItem) {
+        uiModel.repo.url.let { url ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
         }
     }
 }

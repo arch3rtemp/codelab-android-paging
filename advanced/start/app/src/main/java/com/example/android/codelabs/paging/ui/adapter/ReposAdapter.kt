@@ -16,10 +16,10 @@
 
 package com.example.android.codelabs.paging.ui.adapter
 
-import android.util.SparseArray
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
+import androidx.viewbinding.ViewBinding
 import com.example.android.codelabs.paging.ui.UiModel
 import com.example.android.codelabs.paging.ui.common.CommonViewHolder
 import com.example.android.codelabs.paging.ui.common.ItemDrawer
@@ -28,37 +28,28 @@ import com.example.android.codelabs.paging.ui.common.ItemDrawer
  * Adapter for the list of repositories.
  */
 class ReposAdapter(
-    private val clickListener: (UiModel) -> Unit
-) : PagingDataAdapter<ItemDrawer, CommonViewHolder<UiModel>>(UI_MODEL_COMPARATOR) {
+    private val drawers: List<ItemDrawer<*, *>>
+) : PagingDataAdapter<UiModel, CommonViewHolder<ViewBinding, UiModel>>(ItemDrawerDiffUtil(drawers)) {
 
-    private val sparseArray = SparseArray<ItemDrawer>()
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        val key = item?.javaClass.hashCode()
-        if (sparseArray.indexOfKey(key) < 0) {
-            sparseArray.append(key, item)
-        }
-        return key
+
+        return drawers
+            .find { drawer -> drawer.isProperItem(requireNotNull(item)) }
+            ?.getLayoutId()
+            ?: throw IllegalArgumentException("View type not found: $item")
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommonViewHolder<UiModel> {
-        val drawer = sparseArray[viewType]
-        return drawer.createViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommonViewHolder<ViewBinding, UiModel> {
+        val inflater = LayoutInflater.from(parent.context)
+        return drawers
+            .find { drawer -> drawer.getLayoutId() == viewType }
+            ?.getViewHolder(inflater, parent)
+            ?.let { drawer -> drawer as CommonViewHolder<ViewBinding, UiModel> }
+            ?: throw IllegalArgumentException("View type not found: $viewType")
     }
 
-    override fun onBindViewHolder(holder: CommonViewHolder<UiModel>, position: Int) {
-        getItem(position)?.bind(holder, clickListener)
-    }
-
-    companion object {
-        private val UI_MODEL_COMPARATOR = object : DiffUtil.ItemCallback<ItemDrawer>() {
-            override fun areItemsTheSame(oldItem: ItemDrawer, newItem: ItemDrawer): Boolean {
-                return oldItem.compareByItems(newItem)
-            }
-
-            override fun areContentsTheSame(oldItem: ItemDrawer, newItem: ItemDrawer): Boolean {
-                return oldItem.compareByContent(newItem)
-            }
-        }
+    override fun onBindViewHolder(holder: CommonViewHolder<ViewBinding, UiModel>, position: Int) {
+        holder.onBind(requireNotNull(getItem(position)))
     }
 }

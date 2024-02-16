@@ -2,6 +2,7 @@ package com.example.android.codelabs.paging.ui.adapter.drawer
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import com.example.android.codelabs.paging.R
 import com.example.android.codelabs.paging.databinding.RepoViewItemBinding
 import com.example.android.codelabs.paging.ui.UiModel
@@ -9,28 +10,30 @@ import com.example.android.codelabs.paging.ui.adapter.viewholder.RepoViewHolder
 import com.example.android.codelabs.paging.ui.common.CommonViewHolder
 import com.example.android.codelabs.paging.ui.common.ItemDrawer
 
-class RepoDrawer(override val model: UiModel) : ItemDrawer {
-    override fun createViewHolder(parent: ViewGroup): CommonViewHolder<UiModel> {
+class RepoDrawer(
+    private val clickListener: (UiModel.RepoItem) -> Unit
+) : ItemDrawer<RepoViewItemBinding, UiModel.RepoItem> {
+
+    override fun isProperItem(item: UiModel) = item is UiModel.RepoItem
+
+    override fun getLayoutId() = R.layout.repo_view_item
+
+    override fun getViewHolder(
+        layoutInflater: LayoutInflater,
+        parent: ViewGroup
+    ): CommonViewHolder<RepoViewItemBinding, UiModel.RepoItem> {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.repo_view_item, parent, false)
         val binding = RepoViewItemBinding.bind(view)
 
-        return RepoViewHolder(binding)
+        return RepoViewHolder(binding, clickListener)
     }
 
-    override fun bind(holder: CommonViewHolder<UiModel>, listener: (UiModel) -> Unit) {
-        holder.setData(model, listener)
-    }
+    override fun getDiffUtil() = object : DiffUtil.ItemCallback<UiModel.RepoItem>() {
+        override fun areItemsTheSame(oldItem: UiModel.RepoItem, newItem: UiModel.RepoItem) =
+            oldItem.repo.id == newItem.repo.id
 
-    override fun compareByItems(newItem: ItemDrawer): Boolean {
-        return if (model is UiModel.RepoItem && newItem.model is UiModel.RepoItem) {
-            model.repo?.id == (newItem.model as UiModel.RepoItem).repo?.id
-        } else false
-    }
-
-    override fun compareByContent(newItem: ItemDrawer): Boolean {
-        return if (model is UiModel.RepoItem && newItem.model is UiModel.RepoItem) {
-            model.repo == (newItem.model as UiModel.RepoItem).repo
-        } else false
+        override fun areContentsTheSame(oldItem: UiModel.RepoItem, newItem: UiModel.RepoItem) =
+            oldItem.repo == newItem.repo
     }
 }

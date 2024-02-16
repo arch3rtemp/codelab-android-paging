@@ -4,11 +4,11 @@ import com.example.android.codelabs.paging.databinding.SeparatorViewItemBinding
 import com.example.android.codelabs.paging.ui.UiModel
 import com.example.android.codelabs.paging.ui.common.CommonViewHolder
 
-class SeparatorViewHolder(private val binding: SeparatorViewItemBinding) : CommonViewHolder<UiModel>(binding.root) {
+class SeparatorViewHolder(binding: SeparatorViewItemBinding) : CommonViewHolder<SeparatorViewItemBinding, UiModel.SeparatorItem>(binding) {
 
-    override fun setData(model: UiModel, clickListener: (UiModel) -> Unit) {
-        if (model is UiModel.SeparatorItem) {
-            binding.separatorDescription.text = model.description
-        }
+    override fun onBind(item: UiModel.SeparatorItem) {
+        super.onBind(item)
+
+        binding.separatorDescription.text = item.description
     }
 }
