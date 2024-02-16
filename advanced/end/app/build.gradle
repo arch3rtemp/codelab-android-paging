@@ -19,11 +19,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
     defaultConfig {
         applicationId "com.example.android.codelabs.paging"
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
+        minSdk rootProject.minSdkVersion
+        targetSdk rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -48,6 +48,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    namespace 'com.example.android.codelabs.paging'
 }
 
 dependencies {
@@ -67,6 +68,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
+    implementation "androidx.room:room-paging:$roomVersion"
     implementation "androidx.paging:paging-runtime-ktx:$pagingVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 

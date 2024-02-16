@@ -198,7 +198,7 @@ class SearchRepositoriesActivity : AppCompatActivity() {
                 errorState?.let {
                     Toast.makeText(
                         this@SearchRepositoriesActivity,
-                        "\uD83D\uDE28 Wooops ${it.error}",
+                        "\uD83D\uDE28 Whoops ${it.error}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
